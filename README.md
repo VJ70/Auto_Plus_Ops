@@ -1,7 +1,7 @@
 # Auto_Plus_Ops — Autonomous ML Pipeline Health Agent
 
 <p align="center">
-  <b>The one-line pitch:</b> An autonomous ML pipeline health agent that reads traces and experiments from Arize Phoenix, reasons over them with Gemini 3, diagnoses root causes, and proposes actions — which a human operator approves before anything executes.
+ An autonomous ML pipeline health agent that reads traces and experiments from Arize Phoenix, reasons over them with Gemini 3, diagnoses root causes, and proposes actions — which a human operator approves before anything executes.
 </p>
 
 ## Architecture
@@ -86,13 +86,6 @@ npm run dev
 ```
 Open `http://localhost:5173` in your browser. Click **"Run Pipeline Now"** to trigger the agent workflow.
 
-## Demo Script (3 minutes)
-
-1. **0:00–0:20** — Show the monitored pipeline running. Point at Phoenix's trace view with healthy spans.
-2. **0:20–0:50** — Inject a failure (via `inject_latency` in `/infer`). Show Phoenix filling up with red/orange spans.
-3. **0:50–1:50** — Open the dashboard. Watch the Triage agent fire, pick up the anomaly, and hand off to Diagnosis. Show the structured report appearing on the dashboard UI.
-4. **1:50–2:30** — Operator clicks **Approve** on the "patch prompt" action. The new prompt appears in Phoenix's prompt management view.
-5. **2:30–3:00** — Show the feedback loop: the operator decision is logged as a new example in a Phoenix dataset. Close with the Phoenix experiments view showing the improvement.
 
 ## License
 MIT
