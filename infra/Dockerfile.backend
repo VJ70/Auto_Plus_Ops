@@ -2,8 +2,9 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-COPY dashboard/backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt ./requirements-root.txt
+COPY dashboard/backend/requirements.txt ./requirements-backend.txt
+RUN pip install --no-cache-dir -r requirements-root.txt -r requirements-backend.txt
 
 COPY agent/ ./agent/
 COPY dashboard/backend/ .

@@ -217,9 +217,10 @@ async def trigger_manual_run(req: ManualTriggerRequest, background_tasks: Backgr
 
 async def _run_pipeline_background(user_id: str):
     import sys
+    import asyncio
     sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
     from agent.orchestrator import run_pipeline
-    result = run_pipeline(user_id=user_id)
+    result = await asyncio.to_thread(run_pipeline, user_id)
     # Ingest
     async with httpx.AsyncClient() as client:
         await client.post(

@@ -63,11 +63,17 @@ cp .env.example .env
 ```
 
 ### 3. Run the Monitored Pipeline
+In **Terminal 1** — start the server:
 ```bash
 cd pipeline
 pip install -r requirements.txt
-python app.py  # Seeds 60 traces into Phoenix (last 15 with anomalies)
 uvicorn app:app --port 8000
+```
+
+In **Terminal 2** — seed 60 traces (last 15 with anomalies):
+```bash
+cd pipeline
+python app.py
 ```
 
 ### 4. Run the Dashboard Backend & Orchestrator
