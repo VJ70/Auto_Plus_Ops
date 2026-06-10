@@ -1,4 +1,4 @@
-# Auto_Plus_Ops — Autonomous ML Pipeline Health Agent
+# Auto_Ops — Autonomous ML Pipeline Health Agent
 
 <p align="center">
   <em>An autonomous ML pipeline health agent that monitors Arize Phoenix traces, reasons over them using Gemini, diagnoses root causes, and proposes remediation actions via a Human-in-the-Loop dashboard.</em>
