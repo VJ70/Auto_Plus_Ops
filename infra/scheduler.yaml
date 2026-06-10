@@ -1,0 +1,12 @@
+# Cloud Scheduler config
+
+name: auto_plus_ops-trigger
+schedule: "*/5 * * * *"
+timeZone: UTC
+pubsubTarget:
+  topicName: projects/PROJECT_ID/topics/auto_plus_ops-pipeline-trigger
+  data: eyJhY3Rpb24iOiJydW5fcGlwZWxpbmUifQ==  # base64: {"action":"run_pipeline"}
+retryConfig:
+  retryCount: 3
+  minBackoffDuration: 30s
+  maxBackoffDuration: 300s

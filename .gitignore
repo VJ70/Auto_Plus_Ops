@@ -60,6 +60,11 @@ cover/
 *.swp
 *.swo
 
+# Node / Frontend
+node_modules/
+dist/
+.parcel-cache/
+
 # OS generated files
 .DS_Store
 Thumbs.db

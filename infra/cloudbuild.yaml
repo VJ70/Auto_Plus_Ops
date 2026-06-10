@@ -1,0 +1,97 @@
+steps:
+  # ── Build monitored pipeline ───────────────────────────────────────────────
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/auto_plus_ops-pipeline:$SHORT_SHA"
+      - "-f"
+      - "infra/Dockerfile.pipeline"
+      - "."
+    id: build-pipeline
+
+  # ── Build dashboard backend ────────────────────────────────────────────────
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/auto_plus_ops-backend:$SHORT_SHA"
+      - "-f"
+      - "infra/Dockerfile.backend"
+      - "."
+    id: build-backend
+
+  # ── Build dashboard frontend ───────────────────────────────────────────────
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - "build"
+      - "-t"
+      - "gcr.io/$PROJECT_ID/auto_plus_ops-frontend:$SHORT_SHA"
+      - "-f"
+      - "infra/Dockerfile.frontend"
+      - "."
+    id: build-frontend
+
+  # ── Push images ────────────────────────────────────────────────────────────
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/auto_plus_ops-pipeline:$SHORT_SHA"]
+    waitFor: ["build-pipeline"]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/auto_plus_ops-backend:$SHORT_SHA"]
+    waitFor: ["build-backend"]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["push", "gcr.io/$PROJECT_ID/auto_plus_ops-frontend:$SHORT_SHA"]
+    waitFor: ["build-frontend"]
+
+  # ── Deploy to Cloud Run ────────────────────────────────────────────────────
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "auto_plus_ops-pipeline"
+      - "--image=gcr.io/$PROJECT_ID/auto_plus_ops-pipeline:$SHORT_SHA"
+      - "--region=$_REGION"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--port=8000"
+      - "--set-env-vars=PHOENIX_ENDPOINT=$_PHOENIX_ENDPOINT,GOOGLE_API_KEY=$_GOOGLE_API_KEY"
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "auto_plus_ops-backend"
+      - "--image=gcr.io/$PROJECT_ID/auto_plus_ops-backend:$SHORT_SHA"
+      - "--region=$_REGION"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--port=8001"
+      - "--set-env-vars=PHOENIX_URL=$_PHOENIX_URL,PHOENIX_MCP_URL=$_PHOENIX_MCP_URL"
+
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      - "run"
+      - "deploy"
+      - "auto_plus_ops-frontend"
+      - "--image=gcr.io/$PROJECT_ID/auto_plus_ops-frontend:$SHORT_SHA"
+      - "--region=$_REGION"
+      - "--platform=managed"
+      - "--allow-unauthenticated"
+      - "--port=80"
+
+substitutions:
+  _REGION: us-central1
+  _PHOENIX_ENDPOINT: "http://phoenix:6006/v1/traces"
+  _PHOENIX_URL: "http://phoenix:6006"
+  _PHOENIX_MCP_URL: "http://phoenix:6006/mcp/sse"
+  _GOOGLE_API_KEY: ""
+
+images:
+  - "gcr.io/$PROJECT_ID/auto_plus_ops-pipeline:$SHORT_SHA"
+  - "gcr.io/$PROJECT_ID/auto_plus_ops-backend:$SHORT_SHA"
+  - "gcr.io/$PROJECT_ID/auto_plus_ops-frontend:$SHORT_SHA"
